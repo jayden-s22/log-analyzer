@@ -2,6 +2,9 @@
 
 A Python-based security log analyzer built in an Ubuntu 22.04 VirtualBox lab.
 
+## Preview
+![Log Analyzer Report](report_screenshot.png)
+
 ## Features
 - SSH brute force detection with configurable thresholds
 - Web server traffic analysis (Apache access logs)
@@ -13,10 +16,11 @@ A Python-based security log analyzer built in an Ubuntu 22.04 VirtualBox lab.
 Python 3 | Bash | Linux | Apache | Virtualbox | Git
 
 ## How to Run
-'''bash
+```bash
 git clone https://github.com/YourUsername/log-analyzer.git
 cd log-analyzer
 sudo python3 log_analyzer.py
+```
 # Report generated at: report.html
-'''
+
 
