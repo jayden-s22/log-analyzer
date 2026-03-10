@@ -23,4 +23,13 @@ sudo python3 log_analyzer.py
 ```
 # Report generated at: report.html
 
+## Lab Demo
 
+### Attack - Hydra brute force running on Kali
+![Hydra Attack](screenshots/hydra_attacks.png)
+
+### Ubuntu auth.log during the attack
+![Auth Log](screenshots/auth_log_attack.png)
+
+### Detection - Analyzer report catching the attack
+![Report](screenshots/high_severity_report.png)
