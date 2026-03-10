@@ -10,13 +10,13 @@ AUTH_LOG = '/var/log/auth.log'
 APACHE_LOG = '/var/log/apache2/access.log'
 REPORT_OUTPUT = 'report.html'
 
-SSH_FAILED = re.compile(r'(\w{3}\s+\d+\s+[\d:]+).*sshd.*Failed password for (\S+) from ([\d.]+)')
+SSH_FAILED = re.compile(r'(\d{4}-\d{2}-\d{2}T[\d:\.]+[+-][\d:]+)\s+\S+\s+sshd.*Failed password for (\S+) from ([\d.]+)')
 #ex failed ssh log format:  Mar     10  12:34:56  sshd[x]: Failed password for    from 192.168.1.1
 #                                               ^servername                   ^user
 
-SSH_ACCEPTED = re.compile(r'(\w{3}\s+\d+\s+[\d:]+).*sshd.*Accepted password for (\S+) from ([\d.]+)')
+SSH_ACCEPTED = re.compile(r'(\d{4}-\d{2}-\d{2}T[\d:\.]+[+-][\d:]+)\s+\S+\s+sshd.*Accepted password for (\S+) from ([\d.]+)')
 
-APACHE_ACCESS = re.compile(r'([\d.]+.*\[.+?)\].*"(\w+)\s+(/\S*).*"\s+(\d{3})')
+APACHE_ACCESS = re.compile(r'([\d.]+).*\[(.+?)\].*"(\w+)\s+(/\S*).*"\s+(\d{3})')
 #ex apache log format:   192.168.1.1 [10/Mar/...] "GET  /index.html "   200
 #                                                                  ^HTTP/x  ^response size
 
