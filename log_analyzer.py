@@ -1,6 +1,7 @@
 import re #regular expressions (regex)
 import sys #system interface
 import json #JSON handling
+import time
 from datetime import datetime
 from collections import defaultdict, Counter #data structures
 from pathlib import Path #filepaths
@@ -138,7 +139,60 @@ def generate_html_report(ssh_threats, ssh_accepted, web_stats):
     html += '</body></html>' #closes HTML document
     return html
 
+def detect_port_scans(apache_log_path):
+    from collections import defaultdict
+    ip_requests = defaultdict(int) #counts requests per IP address, defaulting to 0 for new IPs
+    scanner_signatures = ['Nikto', 'nmap', 'masscan', 'zgrab', 'python-requests', 'curl/7'] #common user agent signatures for port scanning tools
+
+    scanners_detected = [] #list for confirmed signatures of port scanning activity
+
+    SCAN_THRESHOLD = 50 #thrshold of requests to flag as possible port scan
+
+    try:
+          with open(apache_log_path, 'r') as f:
+            for line in f:
+                m = re.match(r'([\d.]+)', line) #matches IP address at start of line
+                if m:
+                    ip_requests[m.group(1)] += 1 #increments request count for matched IP address, making a full list of how many requests each IP has made
+                for sig in scanner_signatures: #iterates over every signature string
+                    if sig.lower() in line.lower(): #looks for agent signature in line
+                        ip_match = re.match(r'([\d.]+)', line) #if signature is found, tries to match IP address at start of line to identify source of scan
+                        if ip_match:
+                            scanners_detected.append({'ip': ip_match.group(1), 'tool': sig}) #if match is found, appends to 'scanners_detected' dictionary with IP and tool name
+    except FileNotFoundError:
+        pass
+    high_volume = [{'ip': ip, 'count': count, 'type': 'HIGH_VOLUME_SCAN'} 
+                    for ip,count in ip_requests.items() if count >= SCAN_THRESHOLD] #creates list of dictionaries for IPs that have made more than 'SCAN_THRESHOLD' requests, flagged as 'HIGH_VOLUME_SCAN'
+
+    return high_volume + scanners_detected
+
+def watch_live(log_path, threshold=5):
+    print(f' Watching {log_path} for attacks (Ctrl+C to stop)')
+    ip_counts = {}
+
+    with open(log_path, 'r') as f:
+        f.seek(0,2) #jumps to end of file to only read new lines as they are added
+        while True:
+            line = f.readline()
+            if not line:
+                time.sleep(0.5)
+                continue
+            m = SSH_FAILED.search(line) #checks every new line for failed SSH login pattern
+            if m:
+                ip = m.group(3) #extracts IP address from matched line
+                ip_counts[ip] = ip_counts.get(ip, 0) + 1 #increments count of failed attempts for that IP, defaulting to 0 if IP is new
+                count = ip_counts[ip] #stores current count of failed attempts for that IP
+                print(f'Failed login from {ip} (attempt #{count})') #prints message for each failed login attempt, showing IP and current count
+                if count == threshold:
+                    print(f' ALERT: {ip} has hit {threshold} failures - BRUTE FORCE DETECTED') #when count reaches threshold, prints alert message indicating brute force attack detected from that IP
+if '--watch' in sys.argv:
+    watch_live(AUTH_LOG)
+else:
+    main()
+
 def main():
+
+    
     print('Log Analyzer Starting...')
     print(f' Analyzing: {AUTH_LOG}')
     failed_ssh, accepted_ssh = parse_auth_log(AUTH_LOG) #parses auth log and returns data for failed and accepted SSH logins
