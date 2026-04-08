@@ -17,7 +17,7 @@ Python 3 | Bash | Linux | Apache | Virtualbox | Git
 
 ## How to Run
 ```bash
-git clone https://github.com/YourUsername/log-analyzer.git
+git clone https://github.com/jayden-s22/log-analyzer.git
 cd log-analyzer
 sudo python3 log_analyzer.py
 ```
