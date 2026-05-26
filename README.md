@@ -3,7 +3,7 @@
 A two-VM security lab built with VirtualBox where Kali Linux generates real attacks against an Ubuntu server, which are detected and reported by a custom Python log analyzer
 
 ## Preview
-![Log Analyzer Report](report_screenshot.png)
+![Log Analyzer Report](screenshots/report_screenshot.png)
 
 ## Features
 - SSH brute force detection with HIGH/MEDIUM severity ratings
