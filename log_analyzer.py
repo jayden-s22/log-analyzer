@@ -185,10 +185,7 @@ def watch_live(log_path, threshold=5):
                 print(f'Failed login from {ip} (attempt #{count})') #prints message for each failed login attempt, showing IP and current count
                 if count == threshold:
                     print(f' ALERT: {ip} has hit {threshold} failures - BRUTE FORCE DETECTED') #when count reaches threshold, prints alert message indicating brute force attack detected from that IP
-if '--watch' in sys.argv:
-    watch_live(AUTH_LOG)
-else:
-    main()
+
 
 def main():
 
@@ -215,4 +212,7 @@ def main():
     print(f' Suspicious web requests: {len(web_stats["suspicious_paths"])}') #prints number of web requests flagged as suspicious
 
 if __name__ == '__main__':
-    main()
+    if '--watch' in sys.argv:
+        watch_live(AUTH_LOG)
+    else:
+        main()
